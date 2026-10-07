@@ -1,0 +1,55 @@
+{
+  "name": "bridge",
+  "productName": "Bridge",
+  "version": "1.1.0",
+  "description": "Offline file sharing and chat over local network (LAN / Wi-Fi). No cloud, no USB, no file size limit.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js",
+    "dist": "electron-builder"
+  },
+  "author": "Albatany 2026",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.albatany.bridge",
+    "productName": "Bridge",
+    "files": [
+      "main.js",
+      "server.js",
+      "public/**",
+      "build/icon.png"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "pacman"
+      ],
+      "category": "Network",
+      "maintainer": "Albatany"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.utilities"
+    }
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}

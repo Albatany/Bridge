@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRIDGE</title>
+<style>
+  :root { --bg:#0a1730; --panel:#10285a; --edge:#4f9bff; --ink:#e3f1ff; --dim:#8fb4e8; --btn:#2563eb; --hi:#7dd3fc; --dark:#050d20; }
+  * { box-sizing:border-box; image-rendering:pixelated; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 "Press Start 2P","Courier New",monospace; letter-spacing:.5px; }
+  .wrap { max-width:960px; margin:0 auto; padding:20px 14px 40px; }
+  header { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  header svg { width:64px; height:32px; }
+  h1 { margin:0; font-size:28px; letter-spacing:4px; color:var(--hi); text-shadow:3px 3px 0 var(--dark); }
+  h2 { margin:0 0 10px; font-size:14px; color:var(--hi); text-transform:uppercase; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:720px) { .grid { grid-template-columns:1fr; } }
+  .box { background:var(--panel); border:4px solid var(--edge); box-shadow:6px 6px 0 var(--dark); padding:14px; }
+  .full { grid-column:1/-1; }
+  .dim { color:var(--dim); font-size:12px; }
+  .pin { font-size:26px; letter-spacing:6px; color:#fff; background:var(--dark); padding:6px 10px; display:inline-block; border:3px solid var(--edge); }
+  button, label.btn { font:inherit; font-size:12px; text-transform:uppercase; color:#fff; background:var(--btn); border:3px solid var(--hi); box-shadow:4px 4px 0 var(--dark); padding:8px 12px; cursor:pointer; display:inline-block; margin:0 6px 8px 0; }
+  button:active, label.btn:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--dark); }
+  button.ghost { background:var(--dark); border-color:var(--edge); }
+  input[type=file] { display:none; }
+  textarea { width:100%; min-height:80px; font:inherit; font-size:13px; background:var(--dark); color:var(--ink); border:3px solid var(--edge); padding:8px; resize:vertical; }
+  .dev { display:block; width:100%; text-align:left; margin:0 0 8px; background:var(--dark); border-color:var(--edge); }
+  .dev.on { background:var(--btn); border-color:#fff; }
+  .bar { height:18px; background:var(--dark); border:3px solid var(--edge); margin-top:6px; }
+  .bar i { display:block; height:100%; width:0; background:var(--hi); }
+  .row { border-bottom:3px dashed var(--edge); padding:8px 0; font-size:12px; word-break:break-all; }
+  .row:last-child { border:0; }
+  .tag { background:var(--hi); color:var(--dark); padding:1px 6px; margin-right:6px; }
+  .chat { height:220px; overflow:auto; background:var(--dark); border:3px solid var(--edge); padding:8px; }
+  .m { max-width:75%; margin:6px 0; padding:6px 8px; border:3px solid var(--edge); background:var(--panel); font-size:12px; word-break:break-word; }
+  .m.me { margin-left:auto; background:var(--btn); border-color:var(--hi); }
+  .send { display:flex; gap:8px; margin-top:10px; }
+  .send input { flex:1; min-width:0; font:inherit; font-size:13px; background:var(--dark); color:var(--ink); border:3px solid var(--edge); padding:8px; }
+  .send button { margin:0; }
+  .badge { float:right; background:var(--hi); color:var(--dark); padding:0 6px; }
+  footer { margin-top:26px; text-align:center; color:var(--dim); font-size:12px; }
+  #msg { min-height:20px; margin-top:6px; color:var(--hi); font-size:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <svg viewBox="0 0 16 8" shape-rendering="crispEdges" fill="#7dd3fc">
+      <rect x="2" y="0" width="2" height="6"/><rect x="12" y="0" width="2" height="6"/>
+      <rect x="0" y="5" width="16" height="1"/><rect x="0" y="6" width="16" height="2" fill="#2563eb"/>
+      <rect x="4" y="1" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="4" width="2" height="1"/>
+      <rect x="11" y="1" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/>
+    </svg>
+    <h1>BRIDGE</h1>
+  </header>
+
+  <div class="grid">
+    <section class="box">
+      <h2>Perangkat Saya</h2>
+      <div id="me" class="dim">memuat...</div>
+      <p class="dim">PIN pairing:</p>
+      <div class="pin" id="pin">------</div>
+      <p class="dim" id="dir"></p>
+    </section>
+
+    <section class="box">
+      <h2>Perangkat Terdekat</h2>
+      <div id="peers"><span class="dim">Mencari perangkat... buka Bridge di komputer lain.</span></div>
+    </section>
+
+    <section class="box">
+      <h2>Kirim File / Folder</h2>
+      <label class="btn">Pilih File<input type="file" id="f" multiple></label>
+      <label class="btn">Pilih Folder<input type="file" id="d" webkitdirectory></label>
+      <div class="bar"><i id="prog"></i></div>
+      <div id="msg"></div>
+    </section>
+
+    <section class="box">
+      <h2>Teks / Clipboard</h2>
+      <textarea id="txt" placeholder="Tulis teks atau tempel clipboard..."></textarea>
+      <button id="paste" class="ghost">Tempel Clipboard</button>
+      <button id="sendTxt">Kirim Teks</button>
+    </section>
+
+    <section class="box full">
+      <h2 id="chatTitle">Chat</h2>
+      <div id="chat" class="chat"></div>
+      <div class="send"><input id="msgIn" placeholder="Ketik pesan..." maxlength="2000"><button id="msgBtn">Kirim</button></div>
+    </section>
+
+    <section class="box full">
+      <h2>Riwayat Transfer</h2>
+      <div id="hist"><span class="dim">Belum ada transfer.</span></div>
+    </section>
+  </div>
+  <footer>&copy; Albatany 2026 &mdash; Bridge</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const size = n => n > 1e9 ? (n/1e9).toFixed(2)+' GB' : n > 1e6 ? (n/1e6).toFixed(1)+' MB' : (n/1e3).toFixed(1)+' KB';
+const pins = JSON.parse(localStorage.getItem('pins') || '{}');
+let S = null, sel = null;
+const say = t => $('msg').textContent = t;
+
+async function poll() {
+  try { S = await (await fetch('/api/state')).json(); render(); } catch {}
+}
+function render() {
+  $('me').innerHTML = `${esc(S.me.name)}<br>${S.ips.map(esc).join('<br>')}`;
+  $('pin').textContent = S.pin;
+  $('dir').textContent = 'Diterima di: ' + S.dir;
+  if (sel && !S.peers.find(p => p.id === sel)) sel = null;
+  $('peers').innerHTML = S.peers.length ? S.peers.map(p =>
+    `<button class="dev ${p.id === sel ? 'on' : ''}" data-id="${p.id}">${esc(p.name)}${unread(p.id) > 0 ? `<span class="badge">${unread(p.id)}</span>` : ''}<br><span class="dim">${p.ip}${pins[p.id] ? ' - paired' : ''}</span></button>`).join('')
+    : '<span class="dim">Mencari perangkat... buka Bridge di komputer lain.</span>';
+  document.querySelectorAll('.dev').forEach(b => b.onclick = () => { sel = b.dataset.id; render(); });
+  $('hist').innerHTML = S.history.length ? S.history.map(h => `<div class="row">
+    <span class="tag">${h.type === 'in' ? 'MASUK' : 'KELUAR'}</span>${h.kind === 'text' ? 'teks: ' + esc(h.text.slice(0, 120)) : esc(h.name) + ' (' + size(h.size) + ')'}
+    <span class="dim"> ${esc(h.peer || '')} ${new Date(h.time).toLocaleTimeString()}</span></div>`).join('') : '<span class="dim">Belum ada transfer.</span>';
+  renderChat();
+}
+const seen = {};
+const inc = id => ((S.chats || {})[id] || []).filter(m => !m.me).length;
+const unread = id => id === sel ? 0 : inc(id) - (seen[id] || 0);
+let ck = '';
+function renderChat() {
+  const p = S.peers.find(x => x.id === sel), list = (sel && S.chats[sel]) || [];
+  if (sel) seen[sel] = inc(sel);
+  $('chatTitle').textContent = p ? 'Chat dengan ' + p.name : 'Chat';
+  const key = sel + ':' + list.length;
+  if (key === ck) return; ck = key;
+  const box = $('chat');
+  box.innerHTML = p ? (list.map(m => `<div class="m ${m.me ? 'me' : ''}">${esc(m.text)}<br><span class="dim">${new Date(m.time).toLocaleTimeString()}</span></div>`).join('') || '<span class="dim">Belum ada pesan.</span>')
+                    : '<span class="dim">Pilih perangkat untuk mulai chat.</span>';
+  box.scrollTop = box.scrollHeight;
+}
+async function sendChat() {
+  const text = $('msgIn').value.trim(); if (!text) return;
+  const p = target(); if (!p) return;
+  try {
+    const r = await fetch(base(p) + '/chat', { method: 'POST', headers: { 'x-pin': pins[p.id] }, body: JSON.stringify({ id: S.me.id, from: S.me.name, text }) });
+    if (r.status === 403) { delete pins[p.id]; return say('PIN salah. Coba lagi.'); }
+    localStorage.setItem('pins', JSON.stringify(pins));
+    await fetch('/api/chatlog', { method: 'POST', body: JSON.stringify({ id: p.id, text }) });
+    $('msgIn').value = ''; poll();
+  } catch { say('Gagal terhubung ke perangkat.'); }
+}
+$('msgBtn').onclick = sendChat;
+$('msgIn').onkeydown = e => { if (e.key === 'Enter') sendChat(); };
+function target() {
+  const p = S && S.peers.find(x => x.id === sel);
+  if (!p) { say('Pilih perangkat tujuan dulu.'); return null; }
+  if (!pins[p.id]) {
+    const v = prompt('Masukkan PIN yang tampil di ' + p.name);
+    if (!v) return null;
+    pins[p.id] = v.trim();
+  }
+  return p;
+}
+const base = p => `http://${p.ip}:${p.port}/api`;
+const record = o => fetch('/api/log', { method: 'POST', body: JSON.stringify(o) });
+const upload = (url, f, pin, cb) => new Promise(ok => {
+  const x = new XMLHttpRequest();
+  x.open('PUT', url); x.setRequestHeader('x-pin', pin);
+  x.upload.onprogress = e => cb(e.loaded / e.total);
+  x.onload = () => ok(x.status); x.onerror = () => ok(0);
+  x.send(f);
+});
+async function sendFiles(files) {
+  const p = target(); if (!p || !files.length) return;
+  for (const f of files) {
+    const name = f.webkitRelativePath || f.name;
+    say('Mengirim: ' + name);
+    const st = await upload(`${base(p)}/file?name=${encodeURIComponent(name)}&from=${encodeURIComponent(S.me.name)}`, f, pins[p.id], r => $('prog').style.width = r * 100 + '%');
+    if (st === 403) { delete pins[p.id]; localStorage.setItem('pins', JSON.stringify(pins)); return say('PIN salah. Coba lagi.'); }
+    if (st !== 200) return say('Gagal mengirim ' + name);
+    localStorage.setItem('pins', JSON.stringify(pins));
+    record({ kind: 'file', name, size: f.size, peer: p.name });
+  }
+  say('Selesai terkirim.'); poll();
+}
+$('f').onchange = e => { sendFiles([...e.target.files]); e.target.value = ''; };
+$('d').onchange = e => { sendFiles([...e.target.files]); e.target.value = ''; };
+$('paste').onclick = async () => { try { $('txt').value = await navigator.clipboard.readText(); } catch { say('Clipboard tidak bisa diakses.'); } };
+$('sendTxt').onclick = async () => {
+  const text = $('txt').value; if (!text) return;
+  const p = target(); if (!p) return;
+  try {
+    const r = await fetch(base(p) + '/text', { method: 'POST', headers: { 'x-pin': pins[p.id] }, body: JSON.stringify({ text, from: S.me.name }) });
+    if (r.status === 403) { delete pins[p.id]; return say('PIN salah. Coba lagi.'); }
+    localStorage.setItem('pins', JSON.stringify(pins));
+    record({ kind: 'text', text, peer: p.name }); say('Teks terkirim.'); $('txt').value = ''; poll();
+  } catch { say('Gagal terhubung ke perangkat.'); }
+};
+poll(); setInterval(poll, 1000);
+</script>
+</body>
+</html>
