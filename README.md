@@ -90,17 +90,6 @@ Jika perangkat tidak saling muncul, pastikan satu jaringan dan router tidak meng
 
 Transfer memakai HTTP biasa yang dilindungi PIN, jadi gunakan hanya di jaringan yang Anda percaya. Enkripsi TLS ada di roadmap.
 
-## Struktur proyek
-
-```
-bridge/
-├── main.js            # cangkang desktop (Electron)
-├── server.js          # discovery UDP + server HTTP (file, teks, chat)
-├── public/index.html  # UI pixel art
-├── build/icon.png     # ikon aplikasi
-└── .github/workflows/release.yml
-```
-
 ## Roadmap
 
 - Pairing lewat QR code
