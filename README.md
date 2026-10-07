@@ -54,7 +54,7 @@ sudo pacman -S nodejs npm git
 # Ubuntu / Debian: sudo apt install nodejs npm git
 # Windows: winget install OpenJS.NodeJS.LTS
 
-git clone https://github.com/<username>/bridge.git
+git clone https://github.com/Albatany/Bridge
 cd bridge
 npm install
 npm start          # jalankan sebagai aplikasi desktop
@@ -107,7 +107,3 @@ bridge/
 - Enkripsi end-to-end (TLS)
 - Chat grup untuk semua perangkat
 - Aplikasi HP
-
-## Lisensi dan kredit
-
-MIT License. Copyright (c) 2026 **Albatany**.
