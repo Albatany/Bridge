@@ -1,5 +1,8 @@
 # BRIDGE
 
+<img width="1920" height="1080" alt="screenshot_20261008_063410-region" src="https://github.com/user-attachments/assets/f3151a44-20bb-4303-ba87-482cfb8a06aa" />
+
+
 Aplikasi desktop untuk **berbagi file dan chat secara offline** lewat jaringan lokal (Wi-Fi / LAN). Tanpa cloud, tanpa Google Drive, tanpa USB, dan **tanpa batas ukuran file**.
 
 ```
